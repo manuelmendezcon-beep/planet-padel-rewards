@@ -1,25 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Planet Pádel Rewards</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 body{
 font-family:Arial,sans-serif;
 background:#f4f4f4;
-padding:20px;
 margin:0;
+padding:20px;
 }
 
 .card{
 background:white;
-padding:20px;
-border-radius:10px;
-box-shadow:0 0 10px rgba(0,0,0,.1);
-max-width:500px;
+max-width:600px;
 margin:auto;
+padding:20px;
+border-radius:15px;
+box-shadow:0 0 15px rgba(0,0,0,.1);
 }
 
 h1{
@@ -39,12 +42,27 @@ box-sizing:border-box;
 button{
 background:#0f766e;
 color:white;
-border:none;
 font-weight:bold;
+border:none;
+cursor:pointer;
 }
 
 button:hover{
 opacity:.9;
+}
+
+#resultado{
+margin-top:20px;
+padding:15px;
+background:#f0fdf4;
+border-radius:10px;
+display:none;
+}
+
+.ticket{
+font-size:28px;
+font-weight:bold;
+color:#0f766e;
 }
 </style>
 </head>
@@ -55,43 +73,125 @@ opacity:.9;
 
 <h1>Planet Pádel Rewards</h1>
 
-<p>Bienvenido al sistema de tickets.</p>
+<p>Acumula tickets y canjéalos por premios.</p>
 
 <input id="nombre" placeholder="Nombre del jugador">
 
-<select id="accion">
-<option>Registro</option>
-<option>Reserva</option>
-<option>Americano</option>
-<option>Torneo</option>
-<option>Referido</option>
-<option>Promoción</option>
+<input id="telefono" placeholder="Teléfono">
+
+<input id="instagram" placeholder="Instagram">
+
+<select id="categoria">
+<option value="Sexta">Sexta</option>
+<option value="Quinta">Quinta</option>
+<option value="Cuarta">Cuarta</option>
+<option value="Tercera">Tercera</option>
+</select>
+
+<select id="lado">
+<option value="Drive">Drive</option>
+<option value="Revés">Revés</option>
 </select>
 
 <button onclick="registrar()">
 Registrar Ticket
 </button>
 
-<p id="resultado"></p>
+<div id="resultado"></div>
 
 </div>
 
 <script>
 
-function registrar(){
+const SUPABASE_URL =
+"https://wljczydcxabclarsnbgj.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_NvCzkeceFbi1QoFMtavXEg_5QdJu0By";
+
+const supabase =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+async function registrar(){
 
 const nombre =
-document.getElementById("nombre").value;
+document.getElementById("nombre").value.trim();
 
-const accion =
-document.getElementById("accion").value;
+if(!nombre){
+alert("Ingresa nombre");
+return;
+}
 
-document.getElementById("resultado").innerHTML =
-"✅ Ticket registrado para " +
-nombre +
-" (" +
-accion +
-")";
+const telefono =
+document.getElementById("telefono").value;
+
+const instagram =
+document.getElementById("instagram").value;
+
+const categoria =
+document.getElementById("categoria").value;
+
+const lado =
+document.getElementById("lado").value;
+
+let { data: jugador } =
+await supabase
+.from("jugadores")
+.select("*")
+.ilike("nombre",nombre)
+.limit(1);
+
+if(jugador && jugador.length>0){
+
+const actual = jugador[0];
+
+await supabase
+.from("jugadores")
+.update({
+tickets:(actual.tickets || 0)+1
+})
+.eq("id",actual.id);
+
+mostrar(
+nombre,
+(actual.tickets || 0)+1
+);
+
+}else{
+
+await supabase
+.from("jugadores")
+.insert([{
+nombre,
+telefono,
+instagram,
+categoria,
+lado,
+tickets:1,
+activo:true
+}]);
+
+mostrar(nombre,1);
+
+}
+
+}
+
+function mostrar(nombre,tickets){
+
+const r =
+document.getElementById("resultado");
+
+r.style.display="block";
+
+r.innerHTML=`
+<h3>${nombre}</h3>
+<p>Tickets acumulados</p>
+<div class="ticket">${tickets}</div>
+`;
 
 }
 
