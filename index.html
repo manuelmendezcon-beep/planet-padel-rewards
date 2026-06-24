@@ -1,10 +1,101 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Planet Pádel Rewards</title>
+
+<style>
+body{
+font-family:Arial,sans-serif;
+background:#f4f4f4;
+padding:20px;
+margin:0;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,.1);
+max-width:500px;
+margin:auto;
+}
+
+h1{
+text-align:center;
+color:#0f766e;
+}
+
+input,select,button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:8px;
+border:1px solid #ccc;
+box-sizing:border-box;
+}
+
+button{
+background:#0f766e;
+color:white;
+border:none;
+font-weight:bold;
+}
+
+button:hover{
+opacity:.9;
+}
+</style>
 </head>
+
 <body>
+
+<div class="card">
+
 <h1>Planet Pádel Rewards</h1>
-<p>Aplicación en construcción.</p>
+
+<p>Bienvenido al sistema de tickets.</p>
+
+<input id="nombre" placeholder="Nombre del jugador">
+
+<select id="accion">
+<option>Registro</option>
+<option>Reserva</option>
+<option>Americano</option>
+<option>Torneo</option>
+<option>Referido</option>
+<option>Promoción</option>
+</select>
+
+<button onclick="registrar()">
+Registrar Ticket
+</button>
+
+<p id="resultado"></p>
+
+</div>
+
+<script>
+
+function registrar(){
+
+const nombre =
+document.getElementById("nombre").value;
+
+const accion =
+document.getElementById("accion").value;
+
+document.getElementById("resultado").innerHTML =
+"✅ Ticket registrado para " +
+nombre +
+" (" +
+accion +
+")";
+
+}
+
+</script>
+
 </body>
 </html>
